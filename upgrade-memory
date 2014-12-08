@@ -1,0 +1,10 @@
+#!/bin/bash
+declare -a slaves=("jenkins-slave-ubuntu" "j-slave-1204-boost146" "slave-12.04-1" "slave-12.04-2" "slave-14.04-32bit-2" "slave-14.04-1")
+for vmname in "${slaves[@]}"
+do
+	vmssh $vmname sudo killall jenkins
+	vmssh $vmname sudo apt-get install linux-image -y
+	vmshutdown $vmname
+	VBoxManage modifyvm $vmname --memory 2048
+	vmstart $vmname 	
+done

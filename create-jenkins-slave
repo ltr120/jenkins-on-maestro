@@ -1,0 +1,47 @@
+#!/bin/bash
+# This script is used to create a VM as a unix slave using VMAPI.
+# example usage:
+# ./create-jenkins-slave test-slave UbuntuTrusty 31895
+
+if [[ "$#" -ne 3 ]]; then
+    echo "Usage: $0 <slave-name> <image-name> <port-number>"
+    exit 1
+fi
+
+# use VMAPI to create vm as slave
+cd ~/vmroot/osimage/
+vmcreate $1 $2 $3
+
+# attach a 20GB virtual disk (vdi) to the vm
+cd ~/vmroot/vm/$1/
+VBoxManage createhd --filename external.vdi --size 20480
+VBoxManage storageattach $1 --storagectl SATA --port 1 --type hdd --medium ./external.vdi
+VBoxManage modifyvm $1 --memory 20480
+
+# start vm and add jenkins user. username is jenkins and password is named-data
+vmstart $1
+vmadduser $1 jenkins named-data
+
+# add record to ~/.ssh/config and vmports
+echo "Host $1
+    User jenkins
+    Hostname maestro
+    Port $3
+    Loglevel quiet
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+" >> ~/.ssh/config
+echo "$1    $3" >> vmports
+
+# add key of maestro account to new slave
+echo "Please type the following line as password (might need to input multiple times):"
+echo "named-data"
+ssh-copy-id jenkins@$1
+
+# copy and run scripts on new slave
+scp ~/mount_disk jenkins@$1:~/
+ssh jenkins@$1 sudo chmod u+x /home/jenkins/mount_disk
+ssh jenkins@$1 /home/jenkins/mount_disk
+scp ~/install_script jenkins@$1:~/
+ssh jenkins@$1 sudo chmod u+x /home/jenkins/install_script
+ssh jenkins@$1 /home/jenkins/install_script

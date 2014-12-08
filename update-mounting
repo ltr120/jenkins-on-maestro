@@ -1,0 +1,13 @@
+#!/bin/bash
+declare -a slaves=("jenkins-slave-ubuntu" "j-slave-1204-boost146" "slave-12.04-1" "slave-12.04-2" "slave-14.04-32bit-2" "slave-14.04-1" "slave-14.10-1" "slave-14.10-2")
+for vmname in "${slaves[@]}"
+do
+	echo $vmname:
+	vmssh $vmname sudo fuser -k /home/jenkins
+	sleep 10
+	vmssh $vmname sudo umount /dev/sdb1
+	vmssh $vmname sudo tune2fs -o journal_data_writeback /dev/sdb1
+	vmssh $vmname "sudo sed -i '$ s/\(.*\)\s\/home\/jenkins.*$/\1 \/home\/jenkins ext4 rw,noatime,data=writeback 0 1/' /etc/fstab"
+	vmssh $vmname sudo mount -a
+	vmssh $vmname "cat /proc/mounts | grep '/dev/sdb1'"
+done

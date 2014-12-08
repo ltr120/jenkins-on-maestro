@@ -1,0 +1,11 @@
+for vmname in $(VBoxManage list runningvms | sed -e 's/"//' -e 's/"\s.*//')
+do
+	vmssh $vmname sudo apt-get update
+	vmssh $vmname sudo apt-get dist-upgrade -y
+	vmssh $vmname sudo shutdown -r now
+done
+sleep 20
+for vmname in $(VBoxManage list runningvms | sed -e 's/"//' -e 's/"\s.*//')
+do
+	vmssh $vmname dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -v ':' | grep -e [0-9] | xargs vmssh $vmname sudo apt-get -y purge
+done

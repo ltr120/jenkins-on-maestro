@@ -1,0 +1,34 @@
+production:
+yi-jenkins				31800
+jenkins-slave-ubuntu			31801
+slave-14.04-32bit-1			31802
+jenkins-slave-ubuntu-13.10-64bit	31803
+ubuntu12.04 with boost 1.46		31804
+slave-12.04-1				31805
+slave-12.04-2				31806
+slave-14.04-32bit-2			31807
+slave-14.04-1				31808
+slave-14.04-2				31809
+slave-14.10-1				31810
+slave-14.10-2				31811
+
+testbed:
+jenkins-test				31850
+traffic-gen-vm1				31851
+traffic-gen-vm2				31852
+jenkins-test-slave			31853
+traffic-gen-vm3				31854
+traffic-gen-vm4				31855
+traffic-gen-vm5				31856
+traffic-gen-vm6				31857
+
+ports other than ssh:
+jenkins master website			31900(localhost:8080)
+
+development/experiment:
+cross-compile				31890
+dev-env-vm1				31891
+cross-compile-2				31892
+android-cross-compile			31893
+android-cross-compile-2			31894
+test-vm-script				31895

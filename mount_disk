@@ -1,0 +1,17 @@
+#!/bin/bash
+# This script is going to be sent to newly created slaves to set up and mount a 20GB attached virtual disk image.
+
+# back up things in /home/jenkins
+sudo mkdir /home/backup
+sudo cp -r /home/jenkins/.* /home/backup
+
+# set up new disk
+echo -e "n\n\n\n\n\nw" | sudo fdisk /dev/sdb
+sudo mkfs -t ext4 /dev/sdb1
+echo "UUID=$(sudo blkid /dev/sdb1 | cut -d "\"" -f 2) /home/jenkins ext4 rw,noatime 0 1" | sudo tee -a /etc/fstab
+sudo mount -a
+
+# restore fore /home/backup
+sudo cp -r /home/backup/.* /home/jenkins/
+sudo chown -R jenkins /home/jenkins
+sudo chgrp -R jenkins /home/jenkins

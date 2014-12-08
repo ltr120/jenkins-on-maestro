@@ -1,0 +1,6 @@
+#!/bin/bash
+for vmname in $(VBoxManage list runningvms | sed -e 's/"//' -e 's/"\s.*//')
+do
+	res=$(VBoxManage showvminfo $vmname | grep 'Memory size') 
+	echo $vmname $res
+done
